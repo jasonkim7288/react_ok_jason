@@ -31,6 +31,17 @@ function App() {
 
 
   const handleInitiateAudioClick = () => {
+    axios.get(`http://newsapi.org/v2/top-headlines?country=us&apiKey=${process.env.NEWS_API_KEY}`)
+    .then((res) => {
+      let tempNews = res.data.articles.map(news => {
+        news.content = news.content.replace(/… \[\+\d+ chars\]/, '');
+        return news;
+      });
+
+      console.log('tempNews:', tempNews)
+      setNews(tempNews);
+    });
+
     console.log("play ready");
     speechOnAudio.play().then(() => {
       speechOnAudio.pause();
@@ -98,7 +109,7 @@ function App() {
               .then((res) => {
                 let tempNews = res.data.articles.map(news => {
                   news.content = news.content.replace(/… \[\+\d+ chars\]/, '');
-                  return news.content;
+                  return news;
                 });
 
                 console.log('tempNews:', tempNews)
@@ -147,7 +158,7 @@ function App() {
       <div className="container">
         {
           news !== [] &&
-          news.map((n, i) => <p key={`news_${i}`}>{n}</p>)
+          news.map((n, i) => <p key={`news_${i}`}>{n.content}</p>)
         }
       </div>
     </div>
