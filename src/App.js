@@ -1,17 +1,22 @@
 import React, { useState, useEffect} from 'react';
 import './App.css';
 import axios from 'axios';
-
+import News from './components/News';
+import MyModal from './components/MyModal';
+import Wiki from './components/Wiki';
+import * as Constants from './libs/constants'
 
 function App() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = new SpeechRecognition();
   const speechOnAudio = new Audio(process.env.PUBLIC_URL + '/SpeechOn.wav');
   // const speechEndAudio = new Audio(process.env.PUBLIC_URL + '/SpeechEnd.wav');
+
   const [command, setCommand] = useState('beforeTrigger');
   const [checkRestart, setCheckRestart] = useState(false);
   const [matchCmd, setMatchCmd] = useState('');
   const [news, setNews] = useState([]);
+  const [wiki, setWiki] = useState('');
 
   recognition.interimResults = true;
   recognition.lang = 'en-US';
@@ -31,18 +36,12 @@ function App() {
 
 
   const handleInitiateAudioClick = () => {
-    axios.get(`http://newsapi.org/v2/top-headlines?country=us&apiKey=${process.env.NEWS_API_KEY}`)
-    .then((res) => {
-      let tempNews = res.data.articles.map(news => {
-        news.content = news.content.replace(/… \[\+\d+ chars\]/, '');
-        return news;
-      });
+    console.log('handleInitiateAudioClick');
 
-      console.log('tempNews:', tempNews)
-      setNews(tempNews);
-    });
+    setCommand('readyToCommand');
+    setMatchCmd('explain about dog');
+    return;
 
-    console.log("play ready");
     speechOnAudio.play().then(() => {
       speechOnAudio.pause();
       recognition.start();
@@ -101,14 +100,15 @@ function App() {
             setNews([]);
             setCommand('readyToCommand');
             setMatchCmd('');
+            setWiki('');
           }
           break;
         case 'readyToCommand':
           if (transcriptCompare.includes('news')) {
-            axios.get('http://newsapi.org/v2/top-headlines?country=us&apiKey=f72d1906112b410880b5896e3622782d')
+            axios.get(`http://newsapi.org/v2/top-headlines?country=au&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`)
               .then((res) => {
                 let tempNews = res.data.articles.map(news => {
-                  news.content = news.content.replace(/… \[\+\d+ chars\]/, '');
+                  news.content = news.content && news.content.replace(/… \[\+\d+ chars\]/, '');
                   return news;
                 });
 
@@ -127,6 +127,13 @@ function App() {
             setCommand('beforeTrigger');
             setCheckRestart(false);
             setMatchCmd('');
+          } else if (Constants.REGEXWIKI.test(transcriptCompare)) {
+            if (transcriptCompare.replace(Constants.REGEXWIKI, '').trim() !== '') {
+              setWiki(matchCmd);
+            }
+            setCommand('beforeTrigger');
+            setCheckRestart(false);
+            setMatchCmd('');
           } else {
             setCommand('beforeTrigger');
             setCheckRestart(false);
@@ -141,25 +148,26 @@ function App() {
   }, [matchCmd]);
 
   useEffect(() => {
-    console.log(window);
-
+    // console.log(window);
+    window.AOS.init({
+      duration: 1500,
+      offset: 200
+    });
   }, []);
 
   return (
     <div>
-      <div className="jumbotron mt-5">
-        <label htmlFor="initiateAudio">Click here first</label>
-        <button type="button" name="initiateAudio" className="btn btn-primary" onClick={handleInitiateAudioClick}>Click</button>
+      <div className="jumbotron">
+        <MyModal onClick={handleInitiateAudioClick} />
         <h1 className="display-4 text-center">Say "OK Jason"</h1>
-        <div className={`text-center display-3 ${command === 'readyToCommand' ? "text-danger" : "text-dark"}`}>
+        <div className={`text-center display-3 mb-2 ${command === 'readyToCommand' ? "text-danger" : "text-dark"}`}>
           <i className="fas fa-microphone-alt"></i>
         </div>
+        <p className="text-center">{matchCmd || '...'}</p>
       </div>
       <div className="container">
-        {
-          news !== [] &&
-          news.map((n, i) => <p key={`news_${i}`}>{n.content}</p>)
-        }
+        {news && news.length !== 0 && <News news={news}/>}
+        {wiki && <Wiki wiki={wiki}/>}
       </div>
     </div>
   );
