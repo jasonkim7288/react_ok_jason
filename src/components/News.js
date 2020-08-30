@@ -1,12 +1,12 @@
 import React, { Fragment, useEffect, useRef} from 'react'
 import Speech from 'speak-tts';
 
-function News(props) {
+function News({news: newsParam, handleResumeSpeechRecognition}) {
   const special = ['zeroth','first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth'];
   const decimal = ['twent', 'thirt', 'fort', 'fift', 'sixt', 'sevent', 'eight', 'ninet'];
   const speech = useRef(new Speech());
   // if content is null, just chuck it away
-  const news = [...props.news].reduce((acc, element) => element.content ? [...acc, element] : acc, []);
+  const news = [...newsParam].reduce((acc, element) => element.content ? [...acc, element] : acc, []);
 
   const stringifyNumber = (n) => {
     if (n < 20) return special[n];
@@ -18,12 +18,19 @@ function News(props) {
     const curSpeech = speech.current;
     curSpeech.init({
       voice:'Google UK English Male'
-    }).then(data => {
+    }).then(() => {
       const text = news.map((n, i) => !n.content ? '' : `The ${stringifyNumber(i + 1)} news is ... ${n.content} ...`).join('');
 
-      console.log("how many times")
       curSpeech.speak({
-        text: text
+        text: text,
+        listeners: {
+          onend: () => {
+            console.log('TTS ended');
+          }
+        }
+      }).then(() => {
+        console.log('TTS finished')
+        handleResumeSpeechRecognition();
       });
     });
 
@@ -38,8 +45,9 @@ function News(props) {
     <Fragment>
       <button type="button" className="btn btn-warning btn-block mb-4" onClick={() => {
           if(speech) {
-            console.log('Speech canceled');
+            console.log('TTS canceled');
             speech.current.cancel();
+            handleResumeSpeechRecognition();
           }
         }}>Stop Playing Audio</button>
       {
