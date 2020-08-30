@@ -5,3 +5,4 @@ export const CurStage = {
   AfterTrigger: 'AfterTrigger',
   DuringProcessing: 'DuringProcessing'
 }
+export const WEEKDAY = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];

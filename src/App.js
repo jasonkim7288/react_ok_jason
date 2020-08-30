@@ -5,6 +5,7 @@ import News from './components/News';
 import MyModal from './components/MyModal';
 import Wiki from './components/Wiki';
 import * as Constants from './libs/constants'
+import Weather from './components/Weather';
 
 function App() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -17,6 +18,7 @@ function App() {
   const [matchCmd, setMatchCmd] = useState('');
   const [news, setNews] = useState([]);
   const [wiki, setWiki] = useState('');
+  const [weatherQuestion, setWeatherQuestion] = useState('');
   const isStarting = useRef(false);
 
   recognition.interimResults = true;
@@ -26,9 +28,9 @@ function App() {
   const handleInitiateAudioClick = () => {
     console.log('handleInitiateAudioClick');
 
-    // setCurStage(Constants.CurStage.AfterTrigger);
-    // setMatchCmd('explain about dog');
-    // return;
+    setCurStage(Constants.CurStage.AfterTrigger);
+    setMatchCmd('weather');
+    return;
 
     speechOnAudio.play().then(() => {
       speechOnAudio.pause();
@@ -36,6 +38,7 @@ function App() {
     });
   }
 
+  // When finishing each response, start speech recognition again to get another 'ok jason'
   const handleResumeSpeechRecognition = () => {
     if (isStarting.current === true) {
       console.log('handleResumeSpeechRecognition, but doesn\'t do anything due to the duplication');
@@ -71,7 +74,8 @@ function App() {
 
   // useEffect series
   useEffect(() => {
-    // console.log(window);
+    console.log(window);
+
     window.AOS.init({
       duration: 1500,
       offset: 200
@@ -134,6 +138,7 @@ function App() {
             setCurStage(Constants.CurStage.AfterTriggerFirst);
             setMatchCmd('');
             setWiki('');
+            setWeatherQuestion('');
           }
           break;
         case Constants.CurStage.AfterTrigger:
@@ -160,6 +165,8 @@ function App() {
             setCurStage(Constants.CurStage.BeforeTrigger);
             setCheckRestart(false);
             setMatchCmd('');
+          } else if (transcriptCompare.includes('weather')) {
+            setWeatherQuestion(matchCmd);
           } else if (Constants.REGEXWIKI.test(transcriptCompare)) {
             if (transcriptCompare.replace(Constants.REGEXWIKI, '').trim() !== '') {
               setCurStage(Constants.CurStage.DuringProcessing);
@@ -177,7 +184,7 @@ function App() {
   }, [matchCmd]);
 
   return (
-    <div>
+    <div className="mb-4">
       <div className="jumbotron">
         <MyModal onClick={handleInitiateAudioClick} />
         <h1 className="display-4 text-center">Say "OK Jason"</h1>
@@ -189,6 +196,7 @@ function App() {
       <div className="container">
         {news && news.length !== 0 && <News news={news} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
         {wiki && <Wiki wiki={wiki} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
+        {weatherQuestion && <Weather question={weatherQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useEffect, useState }from 'react'
+import React, { Fragment, useRef, useEffect, useState } from 'react';
 import Speech from 'speak-tts';
 import axios from 'axios';
 import * as Constants from '../libs/constants';
@@ -14,7 +14,6 @@ function Wiki({wiki, handleResumeSpeechRecognition}) {
       .then(({data: {query: {pages}}}) => {
         const firstKey = Object.keys(pages)[0];
         const tempWikiBody = firstKey === '-1' ? `There is no information about ${question}` : pages[firstKey].extract;
-        setWikiBody(tempWikiBody);
 
         curSpeech.init({
           voice: 'Google UK English Male'
@@ -33,11 +32,8 @@ function Wiki({wiki, handleResumeSpeechRecognition}) {
             console.log('TTS error')
           });
         });
-
-        return () => {
-          console.log('TTS dismounted')
-          curSpeech.cancel();
-        }
+        
+        setWikiBody(tempWikiBody);
       });
   }, [])
 
@@ -60,4 +56,4 @@ function Wiki({wiki, handleResumeSpeechRecognition}) {
   )
 }
 
-export default Wiki
+export default Wiki;
