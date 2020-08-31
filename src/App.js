@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef, Fragment} from 'react';
 import './App.css';
 import axios from 'axios';
 import News from './components/News';
@@ -16,7 +16,7 @@ function App() {
   const [curStage, setCurStage] = useState(Constants.CurStage.BeforeTrigger);
   const [checkRestart, setCheckRestart] = useState(false);
   const [matchCmd, setMatchCmd] = useState('');
-  const [news, setNews] = useState([]);
+  const [news, setNews] = useState(null);
   const [wiki, setWiki] = useState('');
   const [weatherQuestion, setWeatherQuestion] = useState('');
   const isStarting = useRef(false);
@@ -28,9 +28,9 @@ function App() {
   const handleInitiateAudioClick = () => {
     console.log('handleInitiateAudioClick');
 
-    setCurStage(Constants.CurStage.AfterTrigger);
-    setMatchCmd('weather');
-    return;
+    // setCurStage(Constants.CurStage.AfterTrigger);
+    // setMatchCmd('weather');
+    // return;
 
     speechOnAudio.play().then(() => {
       speechOnAudio.pause();
@@ -134,7 +134,7 @@ function App() {
         case Constants.CurStage.BeforeTrigger:
           if (transcriptCompare === 'ok jason') {
             speechOnAudio.play();
-            setNews([]);
+            setNews(null);
             setCurStage(Constants.CurStage.AfterTriggerFirst);
             setMatchCmd('');
             setWiki('');
@@ -194,7 +194,16 @@ function App() {
         <p className="text-center">{matchCmd || '...'}</p>
       </div>
       <div className="container">
-        {news && news.length !== 0 && <News news={news} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
+        {!news && !wiki && !weatherQuestion &&
+          <Fragment>
+            <h3 className="text-center">After that</h3>
+            <h3 className="text-center font-weight-light">Say "What is the weather today?"</h3>
+            <h3 className="text-center font-weight-light">Say "Tell me today's news."</h3>
+            <h3 className="text-center font-weight-light">Say "Who is Adam Sandler."</h3>
+            <h3 className="text-center font-weight-light">Say "Show me some unicorns."</h3>
+          </Fragment>
+        }
+        {news && <News news={news} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
         {wiki && <Wiki wiki={wiki} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
         {weatherQuestion && <Weather question={weatherQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
       </div>
