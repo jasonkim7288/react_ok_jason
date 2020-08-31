@@ -14,7 +14,7 @@ function Weather({question, handleResumeSpeechRecognition}) {
 
   useEffect(() => {
     window.navigator.geolocation.getCurrentPosition(position => {
-      axios.get(`http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${process.env.REACT_APP_ACCUWEATHER_API_KEY}&q=${position.coords.latitude},${position.coords.longitude}`)
+      axios.get(`https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${process.env.REACT_APP_ACCUWEATHER_API_KEY}&q=${position.coords.latitude},${position.coords.longitude}`)
         .then(res => {
           const cityId = res.data.Key;
           const cityName = res.data.EnglishName;
@@ -26,7 +26,7 @@ function Weather({question, handleResumeSpeechRecognition}) {
             return;
           }
           setCityInfo(res.data);
-          axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${cityId}?apikey=${process.env.REACT_APP_ACCUWEATHER_API_KEY}`)
+          axios.get(`https://dataservice.accuweather.com/forecasts/v1/daily/5day/${cityId}?apikey=${process.env.REACT_APP_ACCUWEATHER_API_KEY}`)
             .then(res => {
               console.log('res:', res)
               let tempWeather = {...res.data}

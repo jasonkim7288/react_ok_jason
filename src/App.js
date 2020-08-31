@@ -143,7 +143,7 @@ function App() {
           break;
         case Constants.CurStage.AfterTrigger:
           if (transcriptCompare.includes('news')) {
-            axios.get(`http://newsapi.org/v2/top-headlines?country=au&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`)
+            axios.get(`https://newsapi.org/v2/top-headlines?country=au&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`)
               .then((res) => {
                 let tempNews = res.data.articles.map(news => {
                   news.content = news.content && news.content.replace(/… \[\+\d+ chars\]/, '');
