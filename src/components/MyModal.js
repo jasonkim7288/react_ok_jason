@@ -1,22 +1,27 @@
-import React, { useState } from 'react'
-import { Modal, Button } from 'react-bootstrap';
+import React, { useState, useRef } from 'react'
+import { Modal, Button, Form } from 'react-bootstrap';
 
-function MyModal(props) {
+function MyModal({onClick, setTriggerWord}) {
   const [show, setShow] = useState(true);
+  const inputKeyword = useRef(null);
 
   const handleClose = () => {
-    props.onClick();
+    setTriggerWord(inputKeyword.current.value || "OK Jason");
+    onClick();
     setShow(false);
   };
 
   return (
     <Modal show={show} backdrop="static" keyboard={false}>
       <Modal.Header>
-        <Modal.Title>Please confirm the audio permission</Modal.Title>
+        <Modal.Title>Welcome to OK Json</Modal.Title>
       </Modal.Header>
-      <Modal.Body>This speech recognition app needs the audio permission. Please select OK button.</Modal.Body>
+      <Modal.Body>
+        <p>Please confirm your triggering keyword</p>
+        <Form.Control ref={inputKeyword} type="text" placeholder="OK Jason" />
+      </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={handleClose}>OK</Button>
+        <Button className="btn-block" variant="primary" onClick={handleClose}>OK</Button>
       </Modal.Footer>
     </Modal>
   )

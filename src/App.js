@@ -19,6 +19,7 @@ function App() {
   const [news, setNews] = useState(null);
   const [wiki, setWiki] = useState('');
   const [weatherQuestion, setWeatherQuestion] = useState('');
+  const [triggerWord, setTriggerWord] = useState('OK Jason');
   const isStarting = useRef(false);
 
   recognition.interimResults = true;
@@ -29,7 +30,7 @@ function App() {
     console.log('handleInitiateAudioClick');
 
     // setCurStage(Constants.CurStage.AfterTrigger);
-    // setMatchCmd('weather');
+    // setMatchCmd('delete unicorns');
     // return;
 
     speechOnAudio.play().then(() => {
@@ -128,11 +129,11 @@ function App() {
 
       console.log(`handleMatchCmd, curStage = ${curStage}`);
       const transcriptCompare = matchCmd.toLowerCase();
-      console.log('transcriptCompare:', transcriptCompare)
+      console.log(`transcriptCompare: ${transcriptCompare}, triggerWord: ${triggerWord}`)
 
       switch(curStage) {
         case Constants.CurStage.BeforeTrigger:
-          if (transcriptCompare === 'ok jason') {
+          if (transcriptCompare === triggerWord.toLowerCase()) {
             speechOnAudio.play();
             setNews(null);
             setCurStage(Constants.CurStage.AfterTriggerFirst);
@@ -158,14 +159,23 @@ function App() {
                 recognition.start();
               });
           } else if (transcriptCompare.includes('unicorn')) {
-            console.log('unicorn')
-            window.cornify_add();
-            window.cornify_add();
-            window.cornify_add();
+            if (transcriptCompare.includes('delete') || transcriptCompare.includes('remove') || transcriptCompare.includes('get rid of')) {
+              document.querySelectorAll('.__cornify_unicorn').forEach(unicorn => {
+                unicorn.parentNode.removeChild(unicorn);
+              });
+              const unicorn = document.getElementById('__cornify_count');
+              unicorn && unicorn.parentNode.removeChild(unicorn);
+            } else {
+              window.cornify_add();
+              window.cornify_add();
+              window.cornify_add();
+            }
+
             setCurStage(Constants.CurStage.BeforeTrigger);
             setCheckRestart(false);
             setMatchCmd('');
           } else if (transcriptCompare.includes('weather')) {
+            setCurStage(Constants.CurStage.DuringProcessing);
             setWeatherQuestion(matchCmd);
           } else if (Constants.REGEXWIKI.test(transcriptCompare)) {
             if (transcriptCompare.replace(Constants.REGEXWIKI, '').trim() !== '') {
@@ -186,9 +196,12 @@ function App() {
   return (
     <div className="mb-4">
       <div className="jumbotron">
-        <MyModal onClick={handleInitiateAudioClick} />
-        <h1 className="display-4 text-center">Say "OK Jason"</h1>
-        <div className={`text-center display-3 mb-2 ${curStage === Constants.CurStage.AfterTrigger || curStage === Constants.CurStage.AfterTriggerFirst ? "text-danger" : "text-dark"}`}>
+        <MyModal onClick={handleInitiateAudioClick} setTriggerWord={setTriggerWord}/>
+        <div className="display-4 text-center">
+          Say <a href="/" className="text-primary">{`"${triggerWord}"`}</a>
+        </div>
+        <div className={`text-center display-3 mb-2
+            ${curStage === Constants.CurStage.BeforeTrigger ? "text-primary" : (curStage === Constants.CurStage.AfterTrigger || curStage === Constants.CurStage.AfterTriggerFirst ? "text-danger" : "text-dark")}`}>
           <i className="fas fa-microphone-alt"></i>
         </div>
         <p className="text-center">{matchCmd || '...'}</p>
@@ -201,6 +214,7 @@ function App() {
             <h3 className="text-center font-weight-light">Say "Tell me today's news."</h3>
             <h3 className="text-center font-weight-light">Say "Who is Adam Sandler."</h3>
             <h3 className="text-center font-weight-light">Say "Show me some unicorns."</h3>
+            <h3 className="text-center font-weight-light">Say "Remove all unicorns."</h3>
           </Fragment>
         }
         {news && <News news={news} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
