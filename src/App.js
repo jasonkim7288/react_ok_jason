@@ -6,6 +6,7 @@ import MyModal from './components/MyModal';
 import Wiki from './components/Wiki';
 import * as Constants from './libs/constants'
 import Weather from './components/Weather';
+import GoogleMap from './components/GoogleMaps';
 
 function App() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -19,6 +20,7 @@ function App() {
   const [news, setNews] = useState(null);
   const [wiki, setWiki] = useState('');
   const [weatherQuestion, setWeatherQuestion] = useState('');
+  const [mapQuestion, setMapQuestion] = useState('');
   const [triggerWord, setTriggerWord] = useState('OK Jason');
   const isStarting = useRef(false);
 
@@ -78,8 +80,8 @@ function App() {
     console.log(window);
 
     window.AOS.init({
-      duration: 1500,
-      offset: 200
+      duration: 1500
+      // offset: 200
     });
   }, []);
 
@@ -140,6 +142,7 @@ function App() {
             setMatchCmd('');
             setWiki('');
             setWeatherQuestion('');
+            setMapQuestion('');
           }
           break;
         case Constants.CurStage.AfterTrigger:
@@ -177,11 +180,12 @@ function App() {
           } else if (transcriptCompare.includes('weather')) {
             setCurStage(Constants.CurStage.DuringProcessing);
             setWeatherQuestion(matchCmd);
+          } else if (Constants.REGEXMAP.test(transcriptCompare)) {
+            setCurStage(Constants.CurStage.DuringProcessing);
+            setMapQuestion(matchCmd);
           } else if (Constants.REGEXWIKI.test(transcriptCompare)) {
-            if (transcriptCompare.replace(Constants.REGEXWIKI, '').trim() !== '') {
-              setCurStage(Constants.CurStage.DuringProcessing);
-              setWiki(matchCmd);
-            }
+            setCurStage(Constants.CurStage.DuringProcessing);
+            setWiki(matchCmd);
           } else {
             handleResumeSpeechRecognition();
           }
@@ -198,7 +202,18 @@ function App() {
       <div className="jumbotron">
         <MyModal onClick={handleInitiateAudioClick} setTriggerWord={setTriggerWord}/>
         <div className="display-4 text-center">
-          Say <a href="/" className="text-primary">{`"${triggerWord}"`}</a>
+          {
+            curStage === Constants.CurStage.BeforeTrigger &&
+            <Fragment>Say <a href="/" className="text-primary">{`"${triggerWord}"`}</a></Fragment>
+          }
+          {
+            curStage === Constants.CurStage.AfterTrigger &&
+            <Fragment>Ask any Question</Fragment>
+          }
+          {
+            curStage === Constants.CurStage.DuringProcessing &&
+            "Playing sound..."
+          }
         </div>
         <div className={`text-center display-3 mb-2
             ${curStage === Constants.CurStage.BeforeTrigger ? "text-primary" : (curStage === Constants.CurStage.AfterTrigger || curStage === Constants.CurStage.AfterTriggerFirst ? "text-danger" : "text-dark")}`}>
@@ -207,19 +222,26 @@ function App() {
         <p className="text-center">{matchCmd || '...'}</p>
       </div>
       <div className="container">
-        {!news && !wiki && !weatherQuestion &&
+        {!news && !wiki && !weatherQuestion && !mapQuestion &&
           <Fragment>
             <h3 className="text-center">After that</h3>
             <h3 className="text-center font-weight-light">Say "What is the weather today?"</h3>
-            <h3 className="text-center font-weight-light">Say "Tell me today's news."</h3>
-            <h3 className="text-center font-weight-light">Say "Who is Adam Sandler."</h3>
+            {/* News API is not free for a real website. It only works on localhost for free */}
+            <h3 className="text-center font-weight-light">
+              <span style={{textDecoration: "line-through red"}}>Say "Tell me today's news."</span>
+              <span className="pl-3" style={{fontSize: "0.6em"}}>(News API is free only on localhost)</span>
+            </h3>
+            <h3 className="text-center font-weight-light">Say "Who is Adam Sandler?"</h3>
+            <h3 className="text-center font-weight-light">Say "Where is Coder Academy in Brisbane?"</h3>
             <h3 className="text-center font-weight-light">Say "Show me some unicorns."</h3>
             <h3 className="text-center font-weight-light">Say "Remove all unicorns."</h3>
+
           </Fragment>
         }
         {news && <News news={news} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
         {wiki && <Wiki wiki={wiki} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
         {weatherQuestion && <Weather question={weatherQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
+        {mapQuestion && <GoogleMap question={mapQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
       </div>
     </div>
   );
