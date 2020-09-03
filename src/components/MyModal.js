@@ -14,7 +14,7 @@ function MyModal({onClick, setTriggerWord}) {
   return (
     <Modal show={show} backdrop="static" keyboard={false}>
       <Modal.Header>
-        <Modal.Title>Welcome to OK Json</Modal.Title>
+        <Modal.Title>Welcome to OK Jason</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>Please confirm your triggering keyword</p>

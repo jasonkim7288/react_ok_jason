@@ -31,9 +31,9 @@ function App() {
   const handleInitiateAudioClick = () => {
     console.log('handleInitiateAudioClick');
 
-    setCurStage(Constants.CurStage.AfterTrigger);
-    setMatchCmd('location of coder academy brisbane');
-    return;
+    // setCurStage(Constants.CurStage.AfterTrigger);
+    // setMatchCmd('location of fjdsaifjdsifjsdijfi');
+    // return;
 
     speechOnAudio.play().then(() => {
       speechOnAudio.pause();
