@@ -31,9 +31,9 @@ function App() {
   const handleInitiateAudioClick = () => {
     console.log('handleInitiateAudioClick');
 
-    // setCurStage(Constants.CurStage.AfterTrigger);
-    // setMatchCmd('location of fjdsaifjdsifjsdijfi');
-    // return;
+    setCurStage(Constants.CurStage.AfterTrigger);
+    setMatchCmd('who is micheal jackson');
+    return;
 
     speechOnAudio.play().then(() => {
       speechOnAudio.pause();
@@ -224,17 +224,17 @@ function App() {
       <div className="container">
         {!news && !wiki && !weatherQuestion && !mapQuestion &&
           <Fragment>
-            <h3 className="text-center">After that</h3>
-            <h3 className="text-center font-weight-light">Say "What is the weather today?"</h3>
+            <h3 className="text-center">You can ask</h3>
+            <h3 className="text-center font-weight-light">"What is the weather today?"</h3>
             {/* News API is not free for a real website. It only works on localhost for free */}
             <h3 className="text-center font-weight-light">
-              <span style={{textDecoration: "line-through red"}}>Say "Tell me today's news."</span>
+              <span style={{textDecoration: "line-through red"}}>"Tell me today's news."</span>
               <span className="pl-3" style={{fontSize: "0.6em"}}>(News API is free only on localhost)</span>
             </h3>
-            <h3 className="text-center font-weight-light">Say "Who is Adam Sandler?"</h3>
-            <h3 className="text-center font-weight-light">Say "Where is Coder Academy in Brisbane?"</h3>
-            <h3 className="text-center font-weight-light">Say "Show me some unicorns."</h3>
-            <h3 className="text-center font-weight-light">Say "Remove all unicorns."</h3>
+            <h3 className="text-center font-weight-light">"Who is Adam Sandler?"</h3>
+            <h3 className="text-center font-weight-light">"Where is Coder Academy in Brisbane?"</h3>
+            <h3 className="text-center font-weight-light">"Show me some unicorns."</h3>
+            <h3 className="text-center font-weight-light">"Remove all unicorns."</h3>
 
           </Fragment>
         }

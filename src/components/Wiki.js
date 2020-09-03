@@ -15,24 +15,28 @@ function Wiki({wiki, handleResumeSpeechRecognition}) {
         const firstKey = Object.keys(pages)[0];
         const tempWikiBody = firstKey === '-1' ? `There is no information about ${question}` : pages[firstKey].extract;
 
-        curSpeech.init({
-          voice: 'Google UK English Male'
-        }).then(() => {
-          curSpeech.speak({
-            text: tempWikiBody,
-            listeners: {
-              onend: () => {
-                console.log('TTS ended');
-              }
-            }
-          }).then(() => {
-            console.log('TTS finished')
-            handleResumeSpeechRecognition();
-          }).catch(e => {
-            console.log('TTS error')
-          });
-        });
-        
+        let msg = new SpeechSynthesisUtterance();
+        msg.text = tempWikiBody;
+        speechSynthesis.speak(msg);
+
+        // curSpeech.init({
+        //   voice: 'Google UK English Male'
+        // }).then(() => {
+        //   curSpeech.speak({
+        //     text: tempWikiBody,
+        //     listeners: {
+        //       onend: () => {
+        //         console.log('TTS ended');
+        //       }
+        //     }
+        //   }).then(() => {
+        //     console.log('TTS finished')
+        //     handleResumeSpeechRecognition();
+        //   }).catch(e => {
+        //     console.log('TTS error')
+        //   });
+        // });
+
         setWikiBody(tempWikiBody);
       });
   }, [])
