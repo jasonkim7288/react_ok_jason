@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect }  from 'react'
-import Speech from 'speak-tts';
 import axios from 'axios';
 import * as Constants from '../libs/constants';
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api"
@@ -12,7 +11,6 @@ const mapContainerStyle = {
 const defaultCenter = {lat: -34, lng: 150};
 
 function GoogleMaps({ question, handleResumeSpeechRecognition}) {
-  const speech = useRef(new Speech());
   const [locationText, setLocationText] = useState('');
   const [center, setCenter] = useState({lat: -34, lng: 150});
   const [viewport, setViewport] = useState(null);
@@ -23,7 +21,6 @@ function GoogleMaps({ question, handleResumeSpeechRecognition}) {
   const [map, setMap] = useState(null);
 
   useEffect(() => {
-    const curSpeech = speech.current;
     const questionWord = question.match(Constants.REGEXMAP)[0];
     console.log('questionWord:', questionWord);
 
@@ -58,24 +55,17 @@ function GoogleMaps({ question, handleResumeSpeechRecognition}) {
 
         setLocationText(textTTS);
 
-        curSpeech.init({
-          voice: 'Google UK English Male',
-          rate: 0.8
-        }).then(() => {
-          curSpeech.speak({
-            text: textTTS,
-            listeners: {
-              onend: () => {
-                console.log('TTS ended');
-              }
-            }
-          }).then(() => {
-            console.log('TTS finished')
-            handleResumeSpeechRecognition();
-          }).catch(e => {
-            console.log('TTS error')
-          });
-        });
+        let msg = new SpeechSynthesisUtterance();
+        msg.text = textTTS;
+
+        speechSynthesis.speak(msg);
+        msg.onstart = () => {
+          console.log('TTS started');
+        }
+        msg.onend = () => {
+          console.log('TTS finished');
+          handleResumeSpeechRecognition();
+        };
     });
 
   }, []);
@@ -92,6 +82,9 @@ function GoogleMaps({ question, handleResumeSpeechRecognition}) {
 
   return (
     <div>
+      <button type="button" className="btn btn-warning btn-block mb-4" onClick={() => {
+          speechSynthesis.cancel();
+      }}>Stop Playing Audio</button>
       <h3>{locationText}</h3>
       {
         isLoaded &&

@@ -32,7 +32,7 @@ function App() {
     console.log('handleInitiateAudioClick');
 
     setCurStage(Constants.CurStage.AfterTrigger);
-    setMatchCmd('who is micheal jackson');
+    setMatchCmd('weather');
     return;
 
     speechOnAudio.play().then(() => {
@@ -147,20 +147,8 @@ function App() {
           break;
         case Constants.CurStage.AfterTrigger:
           if (transcriptCompare.includes('news')) {
-            axios.get(`https://newsapi.org/v2/top-headlines?country=au&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`)
-              .then((res) => {
-                let tempNews = res.data.articles.map(news => {
-                  news.content = news.content && news.content.replace(/… \[\+\d+ chars\]/, '');
-                  return news;
-                });
-
-                console.log('tempNews:', tempNews)
-                setNews(tempNews);
-                setCurStage(Constants.CurStage.DuringProcessing);
-                setCheckRestart(false);
-                setMatchCmd('');
-                recognition.start();
-              });
+            setCurStage(Constants.CurStage.DuringProcessing);
+            setNews(matchCmd);
           } else if (transcriptCompare.includes('unicorn')) {
             if (transcriptCompare.includes('delete') || transcriptCompare.includes('remove') || transcriptCompare.includes('get rid of')) {
               document.querySelectorAll('.__cornify_unicorn').forEach(unicorn => {
@@ -173,10 +161,7 @@ function App() {
               window.cornify_add();
               window.cornify_add();
             }
-
-            setCurStage(Constants.CurStage.BeforeTrigger);
-            setCheckRestart(false);
-            setMatchCmd('');
+            handleResumeSpeechRecognition();
           } else if (transcriptCompare.includes('weather')) {
             setCurStage(Constants.CurStage.DuringProcessing);
             setWeatherQuestion(matchCmd);

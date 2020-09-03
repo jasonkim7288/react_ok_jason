@@ -1,11 +1,9 @@
 import React, { useRef, useEffect, useState, Fragment }from 'react';
 import * as Constants from '../libs/constants'
-import Speech from 'speak-tts';
 import axios from 'axios';
 
 
 function Weather({question, handleResumeSpeechRecognition}) {
-  const speech = useRef(new Speech());
   const [errMsg, setErrMsg] = useState('');
   const [cityInfo, setCityInfo] = useState(null);
   const [weatherInfo, setWeatherInfo] = useState(null);
@@ -37,7 +35,6 @@ function Weather({question, handleResumeSpeechRecognition}) {
                 tempWeather.DailyForecasts[index].formattedDayOfWeek = Constants.WEEKDAY[tempDate.getDay()];
                 tempWeather.DailyForecasts[index].formattedDay = `${tempDate.getDate()} / ${tempDate.getMonth()}`;
               });
-              const curSpeech = speech.current;
               const weatherInfoForTTS = `Welcome to Jason's Weather forecast. Now, let’s see what the weather is like today in ${cityName}.`
                 + `Today, temperature is ${tempWeather.DailyForecasts[0].Temperature.Minimum.Value} degree to ${tempWeather.DailyForecasts[0].Temperature.Maximum.Value} degree.`
                 + ` It will be ${tempWeather.DailyForecasts[0].Day.IconPhrase} for most of the day,`
@@ -45,23 +42,18 @@ function Weather({question, handleResumeSpeechRecognition}) {
                 + ` Tomorrow, temperature is ${tempWeather.DailyForecasts[1].Temperature.Minimum.Value} degree to ${tempWeather.DailyForecasts[1].Temperature.Maximum.Value} degree.`
                 + ` It will be ${tempWeather.DailyForecasts[1].Day.IconPhrase} for most of the day,`
                 + ` and, ${tempWeather.DailyForecasts[1].Night.IconPhrase} in the evening.`;
-              curSpeech.init({
-                voice: 'Google UK English Male'
-              }).then(() => {
-                curSpeech.speak({
-                  text: weatherInfoForTTS,
-                  listeners: {
-                    onend: () => {
-                      console.log('TTS ended');
-                    }
-                  }
-                }).then(() => {
-                  console.log('TTS finished')
-                  handleResumeSpeechRecognition();
-                }).catch(e => {
-                  console.log('TTS error')
-                });
-              });
+
+              let msg = new SpeechSynthesisUtterance();
+              msg.text = weatherInfoForTTS;
+
+              speechSynthesis.speak(msg);
+              msg.onstart = () => {
+                console.log('TTS started');
+              }
+              msg.onend = () => {
+                console.log('TTS finished');
+                handleResumeSpeechRecognition();
+              };
 
               setWeatherInfo(tempWeather);
           });
@@ -77,11 +69,7 @@ function Weather({question, handleResumeSpeechRecognition}) {
         cityInfo && weatherInfo &&
         <Fragment>
           <button type="button" className="btn btn-warning btn-block mb-4" onClick={() => {
-            if(speech) {
-              console.log('TTS canceled');
-              speech.current.cancel();
-              handleResumeSpeechRecognition();
-            }
+            speechSynthesis.cancel();
           }}>Stop Playing Audio</button>
           <h2 className="text-center">{cityInfo.EnglishName}</h2>
           {
