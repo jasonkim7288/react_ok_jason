@@ -32,13 +32,12 @@ function App() {
     console.log('handleInitiateAudioClick');
 
     // setCurStage(Constants.CurStage.AfterTrigger);
-    // setMatchCmd('weather');
+    // setMatchCmd('where is coder academy in brisbane');
     // return;
 
     speechOnAudio.play().then(() => {
-      speechOnAudio.pause().then(() => {
-        recognition.start();
-      });
+      speechOnAudio.pause();
+      recognition.start();
     });
   }
 
