@@ -35,7 +35,7 @@ function Weather({question, handleResumeSpeechRecognition}) {
                 tempWeather.DailyForecasts[index].formattedDayOfWeek = Constants.WEEKDAY[tempDate.getDay()];
                 tempWeather.DailyForecasts[index].formattedDay = `${tempDate.getDate()} / ${tempDate.getMonth()}`;
               });
-              const weatherInfoForTTS = `Welcome to Jason's Weather forecast. Now, let’s see what the weather is like today in ${cityName}.`
+              const weatherInfoForTTS = `Welcome to Jason's Weather forecast. Now, let’s see what the weather is like in ${cityName}...`
                 + `Today, temperature is ${tempWeather.DailyForecasts[0].Temperature.Minimum.Value} degree to ${tempWeather.DailyForecasts[0].Temperature.Maximum.Value} degree.`
                 + ` It will be ${tempWeather.DailyForecasts[0].Day.IconPhrase} for most of the day,`
                 + ` and, ${tempWeather.DailyForecasts[0].Night.IconPhrase} in the evening.`

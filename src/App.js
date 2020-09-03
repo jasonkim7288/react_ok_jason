@@ -31,13 +31,14 @@ function App() {
   const handleInitiateAudioClick = () => {
     console.log('handleInitiateAudioClick');
 
-    setCurStage(Constants.CurStage.AfterTrigger);
-    setMatchCmd('weather');
-    return;
+    // setCurStage(Constants.CurStage.AfterTrigger);
+    // setMatchCmd('weather');
+    // return;
 
     speechOnAudio.play().then(() => {
-      speechOnAudio.pause();
-      recognition.start();
+      speechOnAudio.pause().then(() => {
+        recognition.start();
+      });
     });
   }
 
