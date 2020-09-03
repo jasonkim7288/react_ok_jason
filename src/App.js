@@ -35,10 +35,11 @@ function App() {
     // setMatchCmd('where is coder academy in brisbane');
     // return;
 
-    speechOnAudio.play().then(() => {
-      speechOnAudio.pause();
-      recognition.start();
-    });
+    // speechOnAudio.play().then(() => {
+    //   speechOnAudio.pause();
+    //   recognition.start();
+    // });
+    recognition.start();
   }
 
   // When finishing each response, start speech recognition again to get another 'ok jason'
