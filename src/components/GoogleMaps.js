@@ -1,7 +1,8 @@
-import React, { useRef, useState, useEffect }  from 'react'
+import React, { useState, useEffect }  from 'react';
 import axios from 'axios';
 import * as Constants from '../libs/constants';
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api"
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import StopPlayBtn from './StopPlayBtn';
 
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -82,9 +83,7 @@ function GoogleMaps({ question, handleResumeSpeechRecognition}) {
 
   return (
     <div>
-      <button type="button" className="btn btn-warning btn-block mb-4" onClick={() => {
-          speechSynthesis.cancel();
-      }}>Stop Playing Audio</button>
+      <StopPlayBtn />
       <h3>{locationText}</h3>
       {
         isLoaded &&

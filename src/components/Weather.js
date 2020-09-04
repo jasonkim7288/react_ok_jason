@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useState, Fragment }from 'react';
-import * as Constants from '../libs/constants'
+import React, { useEffect, useState, Fragment }from 'react';
+import * as Constants from '../libs/constants';
 import axios from 'axios';
-
+import StopPlayBtn from './StopPlayBtn';
 
 function Weather({question, handleResumeSpeechRecognition}) {
   const [errMsg, setErrMsg] = useState('');
@@ -68,9 +68,7 @@ function Weather({question, handleResumeSpeechRecognition}) {
       {
         cityInfo && weatherInfo &&
         <Fragment>
-          <button type="button" className="btn btn-warning btn-block mb-4" onClick={() => {
-            speechSynthesis.cancel();
-          }}>Stop Playing Audio</button>
+          <StopPlayBtn />
           <h2 className="text-center">{cityInfo.EnglishName}</h2>
           {
             weatherInfo.DailyForecasts.map((dailyForecast,i) =>

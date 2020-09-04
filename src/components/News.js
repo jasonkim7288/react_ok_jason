@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useEffect} from 'react';
 import axios from 'axios';
+import StopPlayBtn from './StopPlayBtn';
 
 function News({news: newsParam, handleResumeSpeechRecognition}) {
   const special = ['zeroth','first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth'];
@@ -48,9 +49,7 @@ function News({news: newsParam, handleResumeSpeechRecognition}) {
 
   return (
     <Fragment>
-      <button type="button" className="btn btn-warning btn-block mb-4" onClick={() => {
-          speechSynthesis.cancel();
-        }}>Stop Playing Audio</button>
+      <StopPlayBtn />
       {
         news && news.map((n, i) =>
           <div className="card mb-4" key={`news_${i}`} data-aos={i % 2 === 0 ? "fade-right": "fade-left"}>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, Fragment} from 'react';
 import './App.css';
-import axios from 'axios';
 import News from './components/News';
 import MyModal from './components/MyModal';
 import Wiki from './components/Wiki';
 import * as Constants from './libs/constants'
 import Weather from './components/Weather';
 import GoogleMap from './components/GoogleMaps';
+import Covid from './components/Covid'
 
 function App() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -21,6 +21,7 @@ function App() {
   const [wiki, setWiki] = useState('');
   const [weatherQuestion, setWeatherQuestion] = useState('');
   const [mapQuestion, setMapQuestion] = useState('');
+  const [covidQuestion, setCovidQuestion] = useState('');
   const [triggerWord, setTriggerWord] = useState('OK Jason');
   const isStarting = useRef(false);
 
@@ -32,7 +33,7 @@ function App() {
     console.log('handleInitiateAudioClick');
 
     // setCurStage(Constants.CurStage.AfterTrigger);
-    // setMatchCmd('where is coder academy in brisbane');
+    // setMatchCmd('covid');
     // return;
 
     speechOnAudio.play().then(() => {
@@ -55,7 +56,7 @@ function App() {
     recognition.start();
   };
 
-  // recognition event listeners
+  // speech recognition event listeners
   recognition.addEventListener('result', e => {
     const transcript = [...e.results].map(result => result[0].transcript).join('');
 
@@ -81,7 +82,6 @@ function App() {
 
     window.AOS.init({
       duration: 1500
-      // offset: 200
     });
   }, []);
 
@@ -143,6 +143,7 @@ function App() {
             setWiki('');
             setWeatherQuestion('');
             setMapQuestion('');
+            setCovidQuestion('');
           }
           break;
         case Constants.CurStage.AfterTrigger:
@@ -171,6 +172,9 @@ function App() {
           } else if (Constants.REGEXWIKI.test(transcriptCompare)) {
             setCurStage(Constants.CurStage.DuringProcessing);
             setWiki(matchCmd);
+          } else if (transcriptCompare.includes('19')) {
+            setCurStage(Constants.CurStage.DuringProcessing);
+            setCovidQuestion(matchCmd);
           } else {
             handleResumeSpeechRecognition();
           }
@@ -207,7 +211,7 @@ function App() {
         <p className="text-center">{matchCmd || '...'}</p>
       </div>
       <div className="container">
-        {!news && !wiki && !weatherQuestion && !mapQuestion &&
+        {!news && !wiki && !weatherQuestion && !mapQuestion && !covidQuestion &&
           <Fragment>
             <h3 className="text-center">You can ask</h3>
             <h3 className="text-center font-weight-light">"What is the weather today?"</h3>
@@ -218,6 +222,7 @@ function App() {
             </h3>
             <h3 className="text-center font-weight-light">"Who is Adam Sandler?"</h3>
             <h3 className="text-center font-weight-light">"Where is Coder Academy in Brisbane?"</h3>
+            <h3 className="text-center font-weight-light">"Show me the cases of Covid-19"</h3>
             <h3 className="text-center font-weight-light">"Show me some unicorns."</h3>
             <h3 className="text-center font-weight-light">"Remove all unicorns."</h3>
 
@@ -227,6 +232,7 @@ function App() {
         {wiki && <Wiki wiki={wiki} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
         {weatherQuestion && <Weather question={weatherQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
         {mapQuestion && <GoogleMap question={mapQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
+        {covidQuestion && <Covid question={covidQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
       </div>
     </div>
   );

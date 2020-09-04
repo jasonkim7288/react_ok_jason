@@ -1,6 +1,7 @@
-import React, { Fragment, useRef, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
 import * as Constants from '../libs/constants';
+import StopPlayBtn from './StopPlayBtn';
 
 function Wiki({wiki, handleResumeSpeechRecognition}) {
   const [wikiBody, setWikiBody] = useState('');
@@ -29,9 +30,7 @@ function Wiki({wiki, handleResumeSpeechRecognition}) {
 
   return (
     <Fragment>
-      <button type="button" className="btn btn-warning btn-block mb-4" onClick={() => {
-          speechSynthesis.cancel();
-        }}>Stop Playing Audio</button>
+      <StopPlayBtn />
       {
         <div className="card mb-4" data-aos="fade-up">
           <h3 className="card-header">{wiki}</h3>
