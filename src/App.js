@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Fragment} from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 import './App.css';
 import News from './components/News';
 import MyModal from './components/MyModal';
@@ -33,7 +33,7 @@ function App() {
     console.log('handleInitiateAudioClick');
 
     // setCurStage(Constants.CurStage.AfterTrigger);
-    // setMatchCmd('covid');
+    // setMatchCmd('covid-19');
     // return;
 
     speechOnAudio.play().then(() => {
@@ -41,6 +41,7 @@ function App() {
       recognition.start();
     });
   }
+
 
   // When finishing each response, start speech recognition again to get another 'ok jason'
   const handleResumeSpeechRecognition = () => {
@@ -60,7 +61,7 @@ function App() {
   recognition.addEventListener('result', e => {
     const transcript = [...e.results].map(result => result[0].transcript).join('');
 
-    if(e.results[0].isFinal) {
+    if (e.results[0].isFinal) {
       setMatchCmd(transcript)
     }
   });
@@ -107,15 +108,15 @@ function App() {
   useEffect(() => {
     const handleCheckRestart = () => {
       console.log(`handleCheckRestart, checkRestart = ${checkRestart}, curStage = ${curStage}`);
-      if(checkRestart) {
-        if(curStage === Constants.CurStage.BeforeTrigger) {
+      if (checkRestart) {
+        if (curStage === Constants.CurStage.BeforeTrigger) {
           setCheckRestart(false);
           recognition.start();
-        } else if(curStage === Constants.CurStage.AfterTriggerFirst) {
+        } else if (curStage === Constants.CurStage.AfterTriggerFirst) {
           setCheckRestart(false);
           recognition.start();
           setCurStage(Constants.CurStage.AfterTrigger);
-        } else if(curStage === Constants.CurStage.AfterTrigger) {
+        } else if (curStage === Constants.CurStage.AfterTrigger) {
           handleResumeSpeechRecognition();
         }
       }
@@ -125,7 +126,7 @@ function App() {
 
   useEffect(() => {
     const handleMatchCmd = () => {
-      if(matchCmd === '') {
+      if (matchCmd === '') {
         return;
       }
 
@@ -133,7 +134,7 @@ function App() {
       const transcriptCompare = matchCmd.toLowerCase();
       console.log(`transcriptCompare: ${transcriptCompare}, triggerWord: ${triggerWord}`)
 
-      switch(curStage) {
+      switch (curStage) {
         case Constants.CurStage.BeforeTrigger:
           if (transcriptCompare === triggerWord.toLowerCase()) {
             speechOnAudio.play();
@@ -172,7 +173,7 @@ function App() {
           } else if (Constants.REGEXWIKI.test(transcriptCompare)) {
             setCurStage(Constants.CurStage.DuringProcessing);
             setWiki(matchCmd);
-          } else if (transcriptCompare.includes('19')) {
+          } else if (transcriptCompare.includes('covid-19')) {
             setCurStage(Constants.CurStage.DuringProcessing);
             setCovidQuestion(matchCmd);
           } else {
@@ -188,8 +189,8 @@ function App() {
 
   return (
     <div className="mb-4">
-      <div className="jumbotron">
-        <MyModal onClick={handleInitiateAudioClick} setTriggerWord={setTriggerWord}/>
+      <div className="jumbotron py-4">
+        <MyModal onClick={handleInitiateAudioClick} setTriggerWord={setTriggerWord} />
         <div className="display-4 text-center">
           {
             curStage === Constants.CurStage.BeforeTrigger &&
@@ -217,8 +218,8 @@ function App() {
             <h3 className="text-center font-weight-light">"What is the weather today?"</h3>
             {/* News API is not free for a real website. It only works on localhost for free */}
             <h3 className="text-center font-weight-light">
-              <span style={{textDecoration: "line-through red"}}>"Tell me today's news."</span>
-              <span className="pl-3" style={{fontSize: "0.6em"}}>(News API is free only on localhost)</span>
+              <span style={{ textDecoration: "line-through red" }}>"Tell me today's news."</span>
+              <span className="pl-3" style={{ fontSize: "0.6em" }}>(News API is free only on localhost)</span>
             </h3>
             <h3 className="text-center font-weight-light">"Who is Adam Sandler?"</h3>
             <h3 className="text-center font-weight-light">"Where is Coder Academy in Brisbane?"</h3>
@@ -228,11 +229,11 @@ function App() {
 
           </Fragment>
         }
-        {news && <News news={news} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
-        {wiki && <Wiki wiki={wiki} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
-        {weatherQuestion && <Weather question={weatherQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
-        {mapQuestion && <GoogleMap question={mapQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
-        {covidQuestion && <Covid question={covidQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition}/>}
+        {news && <News news={news} handleResumeSpeechRecognition={handleResumeSpeechRecognition} />}
+        {wiki && <Wiki wiki={wiki} handleResumeSpeechRecognition={handleResumeSpeechRecognition} />}
+        {weatherQuestion && <Weather question={weatherQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition} />}
+        {mapQuestion && <GoogleMap question={mapQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition} />}
+        {covidQuestion && <Covid question={covidQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition} />}
       </div>
     </div>
   );
