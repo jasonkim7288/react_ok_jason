@@ -1,12 +1,11 @@
 import React, { useEffect, useState }from 'react'
 import StopPlayBtn from './StopPlayBtn'
-import axios from 'axios';
 import * as Constants from '../libs/constants';
 import { Bar, Line } from 'react-chartjs-2';
 import moment from 'moment';
+import AWS from 'aws-sdk';
 
 function Covid({ covidQuestion, handleResumeSpeechRecognition }) {
-  const [covidText, setCovidText] = useState('');
   const [chartCovidRecent, setChartCovidRecent] = useState(null);
   const [twoDaysCovidDate, setTwoDaysCovidDate] = useState('');
   const [chartCovidStatistics, setChartCovidStatistics] = useState(null);
@@ -16,34 +15,23 @@ function Covid({ covidQuestion, handleResumeSpeechRecognition }) {
   }
 
   useEffect(() => {
-    // axios.get('https://api.covid19api.com/dayone/country/australia/status/confirmed/live')
-      // .then(res => {
-        // const covids = res.data;
-        const covids = JSON.parse(Constants.COVID_TEMP);
+    const s3 = new AWS.S3({
+      accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+    });
 
-        // get last 2 days info and subtract cases to get the latest 24 hours cases
-        let twoDaysCovids = new Array(2).fill(0).map(a => []);
-        let index = 0;
-        twoDaysCovids[index].unshift({...covids[covids.length - 1]});
-        for (let i = covids.length - 2; i >= 0; i--) {
-          if (covids[i + 1].Date !== covids[i].Date) {
-            index++;
-            if (index > 1) {
-              break;
-            }
-          }
-          twoDaysCovids[index].unshift({...covids[i]});
-        }
+    const params = {
+      Bucket: 'jasoncovid',
+      Key: Constants.COVID_FILE_NAME
+    };
 
-        twoDaysCovids[0].forEach(covid => {
-          covid.Cases = covid.Cases - twoDaysCovids[1].find(c => c.Province === covid.Province).Cases
-        });
+    s3.getObject(params, (err, data) => {
+        const {oneDayCovids, longTermCovids} = JSON.parse(data.Body.toString('ascii'));
 
-        const tempDate = moment(new Date(twoDaysCovids[0][0].Date)).format('dddd, DD MMMM YYYY');
-        setTwoDaysCovidDate(tempDate);
+        setTwoDaysCovidDate(oneDayCovids.date);
 
-        const stateLabels = twoDaysCovids[0].map(covid => Constants.stateShortName[covid.Province]);
-        const stateCovidNum = twoDaysCovids[0].map(covid => covid.Cases);
+        const stateLabels = oneDayCovids.covids.map(covid => Constants.stateShortName[covid.Province]);
+        const stateCovidNum = oneDayCovids.covids.map(covid => covid.Cases);
         setChartCovidRecent({
           labels: stateLabels,
           datasets: [
@@ -60,8 +48,8 @@ function Covid({ covidQuestion, handleResumeSpeechRecognition }) {
         });
 
         // make text for TTS
-        let tempTTS = twoDaysCovids[0].reduce((acc, covid, i) => acc + `${i === twoDaysCovids[0].length - 1 ? 'and ' : ''}${covid.Cases} case${covid.Cases === 1 ? '' : 's'} in ${covid.Province}${i === twoDaysCovids[0].length - 1 ? '.' : ', '}`,
-            `New cases of Covid-19 on ${tempDate} in Australia are ...`);
+        let tempTTS = oneDayCovids.covids.reduce((acc, covid, i) => acc + `${i === oneDayCovids.covids.length - 1 ? 'and ' : ''}${covid.Cases} case${covid.Cases === 1 ? '' : 's'} in ${covid.Province}${i === oneDayCovids.covids.length - 1 ? '.' : ', '}`,
+            `New cases of Covid-19 on ${oneDayCovids.date} in Australia are ...`);
 
         let msg = new SpeechSynthesisUtterance();
         msg.text = tempTTS;
@@ -76,37 +64,18 @@ function Covid({ covidQuestion, handleResumeSpeechRecognition }) {
           handleResumeSpeechRecognition();
         };
 
-        setCovidText(tempTTS);
-
-        // 6 months statistics
-        let sixMonthsCovids = {}
-        index = 0;
-        for (let i = covids.length - 1; i >= 0; i--) {
-          if (!sixMonthsCovids[covids[i].Province]) {
-            sixMonthsCovids[covids[i].Province] = [{...covids[i]}];
-          } else if (new Date(sixMonthsCovids[covids[i].Province][0].Date).getMonth() === new Date(covids[i].Date).getMonth()) {
-            continue;
-          } else if (sixMonthsCovids[covids[i].Province].length >= 7) {
-            break;
-          } else {
-            sixMonthsCovids[covids[i].Province][0].Cases -= covids[i].Cases;
-            sixMonthsCovids[covids[i].Province].unshift({...covids[i]});
-          }
-        }
-
-        console.log(sixMonthsCovids);
-
+        // long term statistics
         let months = [];
-        let sixMonthsDatasets = [];
-        Object.keys(sixMonthsCovids).forEach((key, i) => {
+        let longTermDatasets = [];
+        Object.keys(longTermCovids.covids).forEach((key, i) => {
           if (i === 0) {
-            months = sixMonthsCovids[key].map(covid => moment(new Date(covid.Date)).format('MMM'));
+            months = longTermCovids.covids[key].map(covid => moment(new Date(covid.Date)).format('MMM'));
           }
 
           const colorStr = `rgba(${getRandomNumber(30, 220)}, ${getRandomNumber(30, 220)}, ${getRandomNumber(30, 220)}, `
 
           let tempDataset = {
-            label: Constants.stateShortName[sixMonthsCovids[key][0].Province],
+            label: Constants.stateShortName[longTermCovids.covids[key][0].Province],
             fill: false,
             backgroundColor: `${colorStr}0.4)`,
             borderColor: `${colorStr}1)`,
@@ -125,17 +94,15 @@ function Covid({ covidQuestion, handleResumeSpeechRecognition }) {
             pointHitRadius: 10,
             data: []
           };
-          tempDataset.data = sixMonthsCovids[key].map(covid => covid.Cases);
-          sixMonthsDatasets.push(tempDataset)
+          tempDataset.data = longTermCovids.covids[key].map(covid => covid.Cases);
+          longTermDatasets.push(tempDataset)
         });
 
         setChartCovidStatistics({
           labels: months,
-          datasets: sixMonthsDatasets
+          datasets: longTermDatasets
         });
-
-
-    // });
+    });
   }, []);
 
   return (
