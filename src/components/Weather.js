@@ -24,39 +24,39 @@ function Weather({question, handleResumeSpeechRecognition}) {
             return;
           }
           setCityInfo(res.data);
-          axios.get(`https://dataservice.accuweather.com/forecasts/v1/daily/5day/${cityId}?apikey=${process.env.REACT_APP_ACCUWEATHER_API_KEY}`)
-            .then(res => {
-              console.log('res:', res)
-              let tempWeather = {...res.data}
-              tempWeather.DailyForecasts.forEach((dailyForecast, index) => {
-                tempWeather.DailyForecasts[index].Temperature.Minimum.Value = fahrenheitToCelsius(dailyForecast.Temperature.Minimum.Value);
-                tempWeather.DailyForecasts[index].Temperature.Maximum.Value = fahrenheitToCelsius(dailyForecast.Temperature.Maximum.Value);
-                const tempDate = new Date(dailyForecast.Date);
-                tempWeather.DailyForecasts[index].formattedDayOfWeek = Constants.WEEKDAY[tempDate.getDay()];
-                tempWeather.DailyForecasts[index].formattedDay = `${tempDate.getDate()} / ${tempDate.getMonth()}`;
-              });
-              const weatherInfoForTTS = `Welcome to Jason's Weather forecast. Now, let’s see what the weather is like in ${cityName}...`
-                + `Today, temperature is ${tempWeather.DailyForecasts[0].Temperature.Minimum.Value} degree to ${tempWeather.DailyForecasts[0].Temperature.Maximum.Value} degree.`
-                + ` It will be ${tempWeather.DailyForecasts[0].Day.IconPhrase} for most of the day,`
-                + ` and, ${tempWeather.DailyForecasts[0].Night.IconPhrase} in the evening.`
-                + ` Tomorrow, temperature is ${tempWeather.DailyForecasts[1].Temperature.Minimum.Value} degree to ${tempWeather.DailyForecasts[1].Temperature.Maximum.Value} degree.`
-                + ` It will be ${tempWeather.DailyForecasts[1].Day.IconPhrase} for most of the day,`
-                + ` and, ${tempWeather.DailyForecasts[1].Night.IconPhrase} in the evening.`;
-
-              let msg = new SpeechSynthesisUtterance();
-              msg.text = weatherInfoForTTS;
-
-              speechSynthesis.speak(msg);
-              msg.onstart = () => {
-                console.log('TTS started');
-              }
-              msg.onend = () => {
-                console.log('TTS finished');
-                handleResumeSpeechRecognition();
-              };
-
-              setWeatherInfo(tempWeather);
+          return axios.get(`https://dataservice.accuweather.com/forecasts/v1/daily/5day/${cityId}?apikey=${process.env.REACT_APP_ACCUWEATHER_API_KEY}`)
+        })
+        .then(res => {
+          console.log('res:', res)
+          let tempWeather = {...res.data}
+          tempWeather.DailyForecasts.forEach((dailyForecast, index) => {
+            tempWeather.DailyForecasts[index].Temperature.Minimum.Value = fahrenheitToCelsius(dailyForecast.Temperature.Minimum.Value);
+            tempWeather.DailyForecasts[index].Temperature.Maximum.Value = fahrenheitToCelsius(dailyForecast.Temperature.Maximum.Value);
+            const tempDate = new Date(dailyForecast.Date);
+            tempWeather.DailyForecasts[index].formattedDayOfWeek = Constants.WEEKDAY[tempDate.getDay()];
+            tempWeather.DailyForecasts[index].formattedDay = `${tempDate.getDate()} / ${tempDate.getMonth()}`;
           });
+          const weatherInfoForTTS = `Welcome to Jason's Weather forecast. Now, let’s see what the weather is like in ${cityName}...`
+            + `Today, temperature is ${tempWeather.DailyForecasts[0].Temperature.Minimum.Value} degree to ${tempWeather.DailyForecasts[0].Temperature.Maximum.Value} degree.`
+            + ` It will be ${tempWeather.DailyForecasts[0].Day.IconPhrase} for most of the day,`
+            + ` and, ${tempWeather.DailyForecasts[0].Night.IconPhrase} in the evening.`
+            + ` Tomorrow, temperature is ${tempWeather.DailyForecasts[1].Temperature.Minimum.Value} degree to ${tempWeather.DailyForecasts[1].Temperature.Maximum.Value} degree.`
+            + ` It will be ${tempWeather.DailyForecasts[1].Day.IconPhrase} for most of the day,`
+            + ` and, ${tempWeather.DailyForecasts[1].Night.IconPhrase} in the evening.`;
+
+          let msg = new SpeechSynthesisUtterance();
+          msg.text = weatherInfoForTTS;
+
+          speechSynthesis.speak(msg);
+          msg.onstart = () => {
+            console.log('TTS started');
+          }
+          msg.onend = () => {
+            console.log('TTS finished');
+            handleResumeSpeechRecognition();
+          };
+
+          setWeatherInfo(tempWeather);
       });
     });
 
