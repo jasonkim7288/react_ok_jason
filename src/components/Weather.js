@@ -11,11 +11,13 @@ function Weather({question, handleResumeSpeechRecognition}) {
   const fahrenheitToCelsius = (ferenheit) => Math.floor((ferenheit - 32) * 5 / 9);
 
   useEffect(() => {
+    let cityId;
+    let cityName;
     window.navigator.geolocation.getCurrentPosition(position => {
       axios.get(`https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${process.env.REACT_APP_ACCUWEATHER_API_KEY}&q=${position.coords.latitude},${position.coords.longitude}`)
         .then(res => {
-          const cityId = res.data.Key;
-          const cityName = res.data.EnglishName;
+          cityId = res.data.Key;
+          cityName = res.data.EnglishName;
           if(!cityId) {
             setErrMsg('Counldn\'t find the city name!')
             handleResumeSpeechRecognition();

@@ -6,7 +6,8 @@ import Wiki from './components/Wiki';
 import * as Constants from './libs/constants'
 import Weather from './components/Weather';
 import GoogleMap from './components/GoogleMaps';
-import Covid from './components/Covid'
+import Covid from './components/Covid';
+import Jokes from './components/Jokes';
 
 function App() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -22,6 +23,7 @@ function App() {
   const [weatherQuestion, setWeatherQuestion] = useState('');
   const [mapQuestion, setMapQuestion] = useState('');
   const [covidQuestion, setCovidQuestion] = useState('');
+  const [jokesQuestion, setJokesQuestion] = useState('');
   const [triggerWord, setTriggerWord] = useState('OK Jason');
   const isStarting = useRef(false);
 
@@ -33,7 +35,7 @@ function App() {
     console.log('handleInitiateAudioClick');
 
     // setCurStage(Constants.CurStage.AfterTrigger);
-    // setMatchCmd('covid-19');
+    // setMatchCmd('joke');
     // return;
 
     speechOnAudio.play().then(() => {
@@ -145,6 +147,7 @@ function App() {
             setWeatherQuestion('');
             setMapQuestion('');
             setCovidQuestion('');
+            setJokesQuestion('');
           }
           break;
         case Constants.CurStage.AfterTrigger:
@@ -176,6 +179,9 @@ function App() {
           } else if (transcriptCompare.includes('covid-19')) {
             setCurStage(Constants.CurStage.DuringProcessing);
             setCovidQuestion(matchCmd);
+          } else if (transcriptCompare.includes('joke')) {
+            setCurStage(Constants.CurStage.DuringProcessing);
+            setJokesQuestion(matchCmd);
           } else {
             handleResumeSpeechRecognition();
           }
@@ -212,7 +218,7 @@ function App() {
         <p className="text-center">{matchCmd || '...'}</p>
       </div>
       <div className="container">
-        {!news && !wiki && !weatherQuestion && !mapQuestion && !covidQuestion &&
+        {!news && !wiki && !weatherQuestion && !mapQuestion && !covidQuestion && !jokesQuestion &&
           <Fragment>
             <h3 className="text-center">You can ask</h3>
             <h3 className="text-center font-weight-light">"What is the weather today?"</h3>
@@ -224,6 +230,7 @@ function App() {
             <h3 className="text-center font-weight-light">"Who is Adam Sandler?"</h3>
             <h3 className="text-center font-weight-light">"Where is Coder Academy in Brisbane?"</h3>
             <h3 className="text-center font-weight-light">"Show me the cases of Covid-19"</h3>
+            <h3 className="text-center font-weight-light">"Tell me a joke"</h3>
             <h3 className="text-center font-weight-light">"Show me some unicorns."</h3>
             <h3 className="text-center font-weight-light">"Remove all unicorns."</h3>
 
@@ -234,6 +241,7 @@ function App() {
         {weatherQuestion && <Weather question={weatherQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition} />}
         {mapQuestion && <GoogleMap question={mapQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition} />}
         {covidQuestion && <Covid question={covidQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition} />}
+        {jokesQuestion && <Jokes question={jokesQuestion} handleResumeSpeechRecognition={handleResumeSpeechRecognition} />}
       </div>
     </div>
   );
