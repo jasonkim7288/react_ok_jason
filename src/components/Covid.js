@@ -5,7 +5,7 @@ import { Bar, Line } from 'react-chartjs-2';
 import moment from 'moment';
 import AWS from 'aws-sdk';
 
-function Covid({ covidQuestion, handleResumeSpeechRecognition }) {
+function Covid({ covidQuestion, handleResumeSpeechRecognition, utterance }) {
   const [chartCovidRecent, setChartCovidRecent] = useState(null);
   const [twoDaysCovidDate, setTwoDaysCovidDate] = useState('');
   const [chartCovidStatistics, setChartCovidStatistics] = useState(null);
@@ -51,18 +51,9 @@ function Covid({ covidQuestion, handleResumeSpeechRecognition }) {
         let tempTTS = oneDayCovids.covids.reduce((acc, covid, i) => acc + `${i === oneDayCovids.covids.length - 1 ? 'and ' : ''}${covid.Cases} case${covid.Cases === 1 ? '' : 's'} in ${covid.Province}${i === oneDayCovids.covids.length - 1 ? '.' : ', '}`,
             `New cases of Covid-19 on ${oneDayCovids.date} in Australia are ...`);
 
-        let msg = new SpeechSynthesisUtterance();
-        msg.text = tempTTS;
-        msg.rate = 0.7;
-
-        speechSynthesis.speak(msg);
-        msg.onstart = () => {
-          console.log('TTS started');
-        }
-        msg.onend = () => {
-          console.log('TTS finished');
-          handleResumeSpeechRecognition();
-        };
+        console.log('tempTTs:', tempTTS);
+        utterance.text = tempTTS;
+        speechSynthesis.speak(utterance);
 
         // long term statistics
         let months = [];

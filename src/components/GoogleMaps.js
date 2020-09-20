@@ -11,7 +11,7 @@ const mapContainerStyle = {
 }
 const defaultCenter = {lat: -34, lng: 150};
 
-function GoogleMaps({ question, handleResumeSpeechRecognition}) {
+function GoogleMaps({ question, handleResumeSpeechRecognition, utterance}) {
   const [locationText, setLocationText] = useState('');
   const [center, setCenter] = useState({lat: -34, lng: 150});
   const [viewport, setViewport] = useState(null);
@@ -56,17 +56,8 @@ function GoogleMaps({ question, handleResumeSpeechRecognition}) {
 
         setLocationText(textTTS);
 
-        let msg = new SpeechSynthesisUtterance();
-        msg.text = textTTS;
-
-        speechSynthesis.speak(msg);
-        msg.onstart = () => {
-          console.log('TTS started');
-        }
-        msg.onend = () => {
-          console.log('TTS finished');
-          handleResumeSpeechRecognition();
-        };
+        utterance.text = textTTS;
+        speechSynthesis.speak(utterance);
     });
 
   }, []);

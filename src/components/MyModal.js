@@ -1,14 +1,32 @@
 import React, { useState, useRef } from 'react'
 import { Modal, Button, Form } from 'react-bootstrap';
+import axios from 'axios';
 
-function MyModal({onClick, setTriggerWord}) {
+function MyModal({handleInitiateAudioClick, setTriggerWord}) {
   const [show, setShow] = useState(true);
   const inputKeyword = useRef(null);
 
   const handleClose = () => {
-    setTriggerWord(inputKeyword.current.value || "OK Jason");
-    onClick();
-    setShow(false);
+    const tempTriggerWord = inputKeyword.current.value.trim() || "OK Jason";
+
+    setTriggerWord(tempTriggerWord);
+    if (tempTriggerWord.toLowerCase() !== "ok jason") {
+      axios.get(`https://gender-api.com/get?name=${tempTriggerWord}&key=${process.env.REACT_APP_GENDER_API_KEY}`)
+        .then(res => {
+          console.log('res:', res);
+          handleInitiateAudioClick(res.data.gender);
+        })
+        .catch(err => {
+          console.log('err:', err);
+          handleInitiateAudioClick();
+        })
+        .then(res => {
+          setShow(false);
+        })
+    } else {
+      handleInitiateAudioClick();
+      setShow(false);
+    }
   };
 
   return (

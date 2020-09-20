@@ -2,7 +2,7 @@ import React, { useEffect, useState, Fragment} from 'react';
 import axios from 'axios';
 import StopPlayBtn from './StopPlayBtn';
 
-function Jokes({ question, handleResumeSpeechRecognition}) {
+function Jokes({ question, handleResumeSpeechRecognition, utterance}) {
   const [jokesBody, setJokesBody] = useState('');
 
   useEffect(() => {
@@ -14,17 +14,10 @@ function Jokes({ question, handleResumeSpeechRecognition}) {
       })
       .then(res => {
         const tempJoke = res.data.joke;
-        let msg = new SpeechSynthesisUtterance();
-        msg.text = tempJoke;
 
-        speechSynthesis.speak(msg);
-        msg.onstart = () => {
-          console.log('TTS started');
-        }
-        msg.onend = () => {
-          console.log('TTS finished');
-          handleResumeSpeechRecognition();
-        };
+        utterance.text = tempJoke;
+        speechSynthesis.speak(utterance);
+
         setJokesBody(tempJoke);
       })
   }, []);

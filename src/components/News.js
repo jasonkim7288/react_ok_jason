@@ -1,17 +1,10 @@
 import React, { Fragment, useState, useEffect} from 'react';
 import axios from 'axios';
 import StopPlayBtn from './StopPlayBtn';
+import { stringifyNumber } from '../libs/utilities';
 
-function News({news: newsParam, handleResumeSpeechRecognition}) {
-  const special = ['zeroth','first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth'];
-  const decimal = ['twent', 'thirt', 'fort', 'fift', 'sixt', 'sevent', 'eight', 'ninet'];
+function News({question, handleResumeSpeechRecognition, utterance}) {
   const [news, setNews] = useState(null);
-
-  const stringifyNumber = (n) => {
-    if (n < 20) return special[n];
-    if (n % 10 === 0) return decimal[Math.floor(n / 10) - 2] + 'ieth';
-    return decimal[Math.floor(n / 10) -2] + 'y-' + special[n % 10];
-  };
 
   useEffect(() => {
     axios.get(`https://newsapi.org/v2/top-headlines?country=au&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`)
@@ -31,21 +24,10 @@ function News({news: newsParam, handleResumeSpeechRecognition}) {
 
       const textTTS = tempNews.map((n, i) => !n.content ? '' : `The ${stringifyNumber(i + 1)} news is ... ${n.content} ...`).join('');
 
-      let msg = new SpeechSynthesisUtterance();
-      msg.text = textTTS;
-
-      speechSynthesis.speak(msg);
-      msg.onstart = () => {
-        console.log('TTS started');
-      }
-      msg.onend = () => {
-        console.log('TTS finished');
-        handleResumeSpeechRecognition();
-      };
+      utterance.text = textTTS;
+      speechSynthesis.speak(utterance);
     });
-
   }, []);
-
 
   return (
     <Fragment>

@@ -3,7 +3,7 @@ import * as Constants from '../libs/constants';
 import axios from 'axios';
 import StopPlayBtn from './StopPlayBtn';
 
-function Weather({question, handleResumeSpeechRecognition}) {
+function Weather({question, handleResumeSpeechRecognition, utterance}) {
   const [errMsg, setErrMsg] = useState('');
   const [cityInfo, setCityInfo] = useState(null);
   const [weatherInfo, setWeatherInfo] = useState(null);
@@ -46,17 +46,8 @@ function Weather({question, handleResumeSpeechRecognition}) {
             + ` It will be ${tempWeather.DailyForecasts[1].Day.IconPhrase} for most of the day,`
             + ` and, ${tempWeather.DailyForecasts[1].Night.IconPhrase} in the evening.`;
 
-          let msg = new SpeechSynthesisUtterance();
-          msg.text = weatherInfoForTTS;
-
-          speechSynthesis.speak(msg);
-          msg.onstart = () => {
-            console.log('TTS started');
-          }
-          msg.onend = () => {
-            console.log('TTS finished');
-            handleResumeSpeechRecognition();
-          };
+          utterance.text = weatherInfoForTTS;
+          speechSynthesis.speak(utterance);
 
           setWeatherInfo(tempWeather);
       });

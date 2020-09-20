@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as Constants from '../libs/constants';
 import StopPlayBtn from './StopPlayBtn';
 
-function Wiki({question, handleResumeSpeechRecognition}) {
+function Wiki({question, handleResumeSpeechRecognition, utterance}) {
   const [wikiBody, setWikiBody] = useState('');
 
   useEffect(() => {
@@ -13,17 +13,9 @@ function Wiki({question, handleResumeSpeechRecognition}) {
         const firstKey = Object.keys(pages)[0];
         const tempWikiBody = firstKey === '-1' ? `There is no information about ${query}` : pages[firstKey].extract;
 
-        let msg = new SpeechSynthesisUtterance();
-        msg.text = tempWikiBody;
+        utterance.text = tempWikiBody;
+        speechSynthesis.speak(utterance);
 
-        speechSynthesis.speak(msg);
-        msg.onstart = () => {
-          console.log('TTS started');
-        }
-        msg.onend = () => {
-          console.log('TTS finished');
-          handleResumeSpeechRecognition();
-        };
         setWikiBody(tempWikiBody);
       });
   }, [])
