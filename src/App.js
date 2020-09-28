@@ -67,9 +67,9 @@ function App() {
       handleResumeSpeechRecognition();
     };
 
-    setCurStage(Constants.CurStage.AfterTrigger);
-    setMatchCmd('covid-19');
-    return;
+    // setCurStage(Constants.CurStage.AfterTrigger);
+    // setMatchCmd('covid-19');
+    // return;
 
     speechOnAudio.play().then(() => {
       speechOnAudio.pause();
