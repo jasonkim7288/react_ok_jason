@@ -1,68 +1,50 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h1 align="center"> OK Jason
+</h1>
 
-## Available Scripts
+# Table of Contents
 
-In the project directory, you can run:
+- [Deployed App Link](#Deployed-App-Link)
+- [GitHub repository link](#GitHub-Repository-Link)
+- [Purpose](#Purpose)
+- [Tech stack](#Tech-Stack)
+- [Screenshots](#Screenshots)
 
-### `yarn start`
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+<br /><br /><br />
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+# Deployed App Link
+Deployed app link: https://okjason.netlify.app
 
-### `yarn test`
+[Go back](#table-of-contents)<br /><br /><br />
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `yarn build`
+# GitHub repository link
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+GitHub repository link: https://github.com/jasonkim7288/react_ok_jason
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+[Go back](#table-of-contents)<br /><br /><br />
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Purpose
+'OK Jason' is a browser-based speech recognition service. It is similar to 'OK Google' or 'Siri', but the differnce is that 'OK Jason' is browser based application, so you can experience an AI speaker whereever the Chrome browser is installed in any desktop, tablet, or mobile device. You can change the trigger word other than 'OK Jason' such as 'OK Thomas', 'Siri', or 'Hi John'. The current services are Covid-19 statistics in Australia, Google Map, Weather, Wikipedia, Dad jokes, and diplaying unicorns icons.
 
-### `yarn eject`
+[Go back](#table-of-contents)<br /><br /><br />
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+# Tech stack
+* React JS: Front-end web application library
+* speak-tts: Text To Speech module to read out loud as a response.
+* aws-sdk: AWS S3 Bucket to access the latest update for the Covid-19 statistics in Australia.
+* chart.js: visulised graph module to display statistics.
+* axios: a JavaScript library for making HTTP requests using node.js
+* bootstrap: CSS framework to make UI prettier and quicker
+* moment: Date format handling module
+* react-google-maps: react module to display Google maps
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+[Go back](#table-of-contents)<br /><br /><br />
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Screenshots
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+![Main image](public/ok_jason_01.png)
 
-## Learn More
+![Covid Result](public/ok_jason_02.png)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+[Go back](#table-of-contents)<br /><br /><br />
